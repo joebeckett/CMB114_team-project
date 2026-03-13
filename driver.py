@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 from Joe.featureA import *
-from student2.featureB import *
+from Caner.featureB import *
 
 print("*** Starting the driver script ***\n")
 
@@ -15,5 +15,5 @@ mc = myclass(5)
 # Print the number
 mc.print_num()
 
-
 benzene()
+testsub()

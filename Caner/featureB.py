@@ -2,6 +2,11 @@
 Example code that contains a class.
 """
 
+def testsub():
+    print("This is my subroutine")
+
+input (print("How are you today"))
+
 class myclass:
     """
     This class takes a number upon initialisation.

@@ -14,3 +14,6 @@ sub2()
 mc = myclass(5)
 # Print the number
 mc.print_num()
+
+
+benzene()

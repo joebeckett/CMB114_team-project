@@ -10,3 +10,6 @@ def hello_world():
 
 def sub2():
     print("This is my second subroutine")
+
+def benzene():
+    print("C6H6")

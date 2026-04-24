@@ -23,3 +23,6 @@ class myclass:
         Print the number.
         """
         print("The number is %i"%self.num)
+
+print("Hello joe")
+

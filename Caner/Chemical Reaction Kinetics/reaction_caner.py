@@ -18,13 +18,43 @@ class Reaction:
     
     def check_values(self):
         if self.name == "":
-            raise ValueError("Reaction name cannot be empty.")
+            print("Reaction name cannot be empty.")
 
         if self.order not in [1, 2]:
-            raise ValueError("Only first-order and second-order reactions are supported.")
+            print("Only first-order and second-order reactions are supported.")
 
         if self.rate_constant <= 0:
-            raise ValueError("Rate constant must be greater than zero.")
+            print("Rate constant must be greater than zero.")
 
         if self.initial_concentration <= 0:
-            raise ValueError("Initial concentration must be greater than zero.")
+            print("Initial concentration must be greater than zero.")
+
+
+    def get_rate(self, concentration):
+        """
+        Calculates the reaction rate.
+
+        First order: rate = k[A]
+        Second order: rate = k[A]^2
+        """
+
+        if concentration < 0:
+            concentration = 0
+
+        if self.order == 1:
+            return self.rate_constant * concentration
+
+        if self.order == 2:
+            return self.rate_constant * concentration ** 2
+
+    def get_rate_equation(self):
+        if self.order == 1:
+            return "rate = k[A]"
+
+        return "rate = k[A]^2"
+
+    def get_units_for_k(self):
+        if self.order == 1:
+            return "s^-1"
+
+        return "dm^3 mol^-1 s^-1"

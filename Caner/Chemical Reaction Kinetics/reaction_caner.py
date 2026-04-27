@@ -82,4 +82,24 @@ class Reaction:
             f"Initial concentration: {self.initial_concentration} mol dm^-3"
         )
 
+def calculate_arrhenius_rate_constant(activation_energy, temperature, pre_exponential_factor):
+    """
+    Calculates k using the Arrhenius equation:
 
+    k = A * e^(-Ea / RT)
+    """
+
+    gas_constant = 8.314
+
+    if activation_energy <= 0:
+        raise ValueError("Activation energy must be greater than zero.")
+
+    if temperature <= 0:
+        raise ValueError("Temperature must be above 0 K.")
+
+    if pre_exponential_factor <= 0:
+        raise ValueError("Pre-exponential factor must be greater than zero.")
+
+    return pre_exponential_factor * math.exp(
+        -activation_energy / (gas_constant * temperature)
+    )

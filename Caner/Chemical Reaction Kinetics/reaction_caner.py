@@ -103,3 +103,27 @@ def calculate_arrhenius_rate_constant(activation_energy, temperature, pre_expone
     return pre_exponential_factor * math.exp(
         -activation_energy / (gas_constant * temperature)
     )
+
+
+def compare_arrhenius_temperatures(activation_energy, pre_exponential_factor, temperatures):
+    """
+    Calculates k values for several temperatures.
+    This helps show how temperature changes reaction rate.
+    """
+
+    results = []
+
+    for temperature in temperatures:
+        k = calculate_arrhenius_rate_constant(
+            activation_energy,
+            temperature,
+            pre_exponential_factor
+        )
+
+        results.append({
+            "temperature": temperature,
+            "rate_constant": k
+        })
+
+    return results
+

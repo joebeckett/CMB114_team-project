@@ -59,7 +59,7 @@ class Reaction:
 
         return "dm^3 mol^-1 s^-1"
     
-    
+
     def get_theoretical_half_life(self):
         """
         Calculates theoretical half-life.
@@ -81,4 +81,5 @@ class Reaction:
             f"Rate constant: {self.rate_constant} {self.get_units_for_k()}\n"
             f"Initial concentration: {self.initial_concentration} mol dm^-3"
         )
+
 

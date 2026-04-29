@@ -1,4 +1,4 @@
- """
+"""
 plotter_joe.py
 Author: Joe
 
@@ -10,8 +10,25 @@ import matplotlib.pyplot as plt
 
 
 class Plotter:
-    # Plot concentration changes over time
+    """
+    Plot concentration changes over time
+    """
+    def plot(self, *args):
+        self.prep()
+        self.core(*args)
+        self.finish()
+
+    def prep(self):
+        plt.figure()
+        plt.plot(times, data, marker="o", markersize=3)      
+
+    def finish(self):
+        plt.grid(True)
+        plt.tight_layout()
+        plt.show()
+       
     def plot_concentration_time(self, times, concentrations, reaction_name):
+        #self.plot_base(times, concentrations, reaction_name)
         plt.figure()
         plt.plot(times, concentrations, marker="o", markersize=3)
         plt.xlabel("Time / s")
@@ -21,8 +38,11 @@ class Plotter:
         plt.tight_layout()
         plt.show()
 
-    # Plot reaction rate changes over time
     def plot_rate_time(self, times, rates, reaction_name):
+        """
+        Plot reaction rate changes over time
+        """
+        #self.plot_base(times, rates, reaction_name)
         plt.figure()
         plt.plot(times, rates, marker="o", markersize=3)
         plt.xlabel("Time / s")
@@ -70,3 +90,17 @@ class Plotter:
         plt.grid(True)
         plt.tight_layout()
         plt.show()
+
+class ConcentrationPlotter(Plotter):
+    def core(self, times, concentrations, reaction_name):
+        plt.xlabel("Time / s")
+        plt.ylabel("Concentration / mol dm$^{-3}$")
+        plt.title(f"Concentration-Time Graph: {reaction_name}")       
+
+if __name__=='__main__':
+    p1 = Plotter()
+    times = [1., 2., 3., 4., 5.]
+    concentrations = [1., 0.8, 0.7, 0.6, 0.5]
+    reaction_name = 'Special reaction'
+
+    p1.plot_concentration_time(times, concentrations, reaction_name)

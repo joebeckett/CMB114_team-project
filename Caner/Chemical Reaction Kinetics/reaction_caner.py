@@ -127,3 +127,17 @@ def compare_arrhenius_temperatures(activation_energy, pre_exponential_factor, te
 
     return results
 
+def explain_reaction_order(order):
+    if order == 1:
+        return (
+            "A first-order reaction has a rate directly proportional to the "
+            "concentration of one reactant."
+        )
+
+    if order == 2:
+        return (
+            "A second-order reaction has a rate proportional to the square "
+            "of the concentration, or to two reacting species."
+        )
+
+    return "This order is not supported by the current program."

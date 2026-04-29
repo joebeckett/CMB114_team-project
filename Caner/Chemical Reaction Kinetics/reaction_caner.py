@@ -8,6 +8,9 @@ import math
 
 
 class Reaction:
+    """
+    Main class to simulate a reaction
+    """
     def _init_(self, name, order, rate_constant, initiral_concentration):
         self.name = name
         self.order = order
@@ -18,7 +21,7 @@ class Reaction:
     
     def check_values(self):
         if self.name == "":
-            print("Reaction name cannot be empty.")
+            raise Exception("Reaction name cannot be empty.")
 
         if self.order not in [1, 2]:
             print("Only first-order and second-order reactions are supported.")
@@ -37,21 +40,23 @@ class Reaction:
         First order: rate = k[A]
         Second order: rate = k[A]^2
         """
+        raise NotImplementedError
 
         if concentration < 0:
             concentration = 0
 
         if self.order == 1:
             return self.rate_constant * concentration
-
-        if self.order == 2:
+        elif self.order == 2:
             return self.rate_constant * concentration ** 2
+        else:
+            raise ValueError("Invalid order: %i"%self.order)
 
     def get_rate_equation(self):
         if self.order == 1:
             return "rate = k[A]"
-
-        return "rate = k[A]^2"
+        else:
+            return "rate = k[A]^2"
 
     def get_units_for_k(self):
         if self.order == 1:
@@ -81,6 +86,15 @@ class Reaction:
             f"Rate constant: {self.rate_constant} {self.get_units_for_k()}\n"
             f"Initial concentration: {self.initial_concentration} mol dm^-3"
         )
+
+class FirstOrderReaction(Reaction):
+    def get_rate(self, concentration):
+        return self.rate_constant * concentration
+
+class SecondOrderReaction(Reaction):
+    def get_rate(self, concentration):
+        return self.rate_constant * concentration ** 2
+
 
 def calculate_arrhenius_rate_constant(activation_energy, temperature, pre_exponential_factor):
     """

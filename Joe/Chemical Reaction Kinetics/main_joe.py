@@ -1,244 +1,203 @@
 """
 main.py
 Authors: Caner and Joe
+
+Main file for the Reaction Kinetics Simulator.
+
+Caner mainly worked on:
+- reaction_caner.py
+- simulator_caner.py
+
+Joe mainly worked on:
+- plotter_joe.py
+- data_export_joe.py
+- user interface in this file
+
+This program allows the user to simulate zero-order, first-order and
+second-order chemical reactions and plot concentration against time.
 """
 
-from reaction_caner import (
-    Reaction,
-    calculate_arrhenius_rate_constant,
-    compare_arrhenius_temperatures,
-    explain_reaction_order
-)
-
+from reaction_caner import Reaction, calculate_arrhenius_rate_constant
 from simulator_caner import Simulator
 from plotter_joe import Plotter
+from data_export_joe import export_to_csv
 
-from input_helpers_joe import (
-    get_positive_float_input,
-    get_menu_choice,
-    ask_yes_no
-)
 
-from data_export_joe import (
-    export_simulation_to_csv,
-    export_summary_to_csv,
-    export_arrhenius_to_csv
-)
+def get_float_input(message):
+    """
+    Gets a number from the user.
+    Keeps asking until the user enters a valid number.
+    """
+
+    while True:
+        try:
+            value = float(input(message))
+            return value
+        except ValueError:
+            print("Please enter a valid number.")
+
+
+def get_int_input(message):
+    """
+    Gets an integer from the user.
+    Used for menu choices and reaction order.
+    """
+
+    while True:
+        try:
+            value = int(input(message))
+            return value
+        except ValueError:
+            print("Please enter a whole number.")
 
 
 def create_reaction_from_user():
-    print("\nCreate a reaction")
-    print("-----------------")
+    """
+    Asks the user for information and creates a Reaction object.
+    """
 
-    name = input("Enter a name for the reaction: ").strip()
+    name = input("Enter a name for the reaction: ")
 
     print("\nChoose reaction order:")
+    print("0 - Zero order")
     print("1 - First order")
     print("2 - Second order")
 
-    order = get_menu_choice("Enter choice: ", [1, 2])
+    order = get_int_input("Enter reaction order: ")
 
-    print("\nChoose how to enter the rate constant:")
-    print("1 - Enter rate constant directly")
-    print("2 - Calculate rate constant using Arrhenius equation")
+    print("\nHow do you want to enter the rate constant?")
+    print("1 - Enter k directly")
+    print("2 - Calculate k using the Arrhenius equation")
 
-    k_choice = get_menu_choice("Enter choice: ", [1, 2])
+    k_choice = get_int_input("Enter choice: ")
 
     if k_choice == 1:
-        rate_constant = get_positive_float_input("Enter rate constant k: ")
+        rate_constant = get_float_input("Enter rate constant k: ")
 
-    else:
-        activation_energy = get_positive_float_input(
-            "Enter activation energy Ea in J mol^-1: "
-        )
-
-        temperature = get_positive_float_input(
-            "Enter temperature in K: "
-        )
-
-        pre_exponential_factor = get_positive_float_input(
-            "Enter pre-exponential factor A: "
-        )
+    elif k_choice == 2:
+        activation_energy = get_float_input("Enter activation energy Ea in J mol^-1: ")
+        temperature = get_float_input("Enter temperature in K: ")
+        pre_exponential = get_float_input("Enter pre-exponential factor A: ")
 
         rate_constant = calculate_arrhenius_rate_constant(
             activation_energy,
             temperature,
-            pre_exponential_factor
+            pre_exponential
         )
 
-        print(f"Calculated k = {rate_constant:.5g}")
+        print(f"Calculated rate constant k = {rate_constant:.5g}")
 
-    initial_concentration = get_positive_float_input(
+    else:
+        print("Invalid choice, using direct input for k.")
+        rate_constant = get_float_input("Enter rate constant k: ")
+
+    initial_concentration = get_float_input(
         "Enter initial concentration in mol dm^-3: "
     )
 
-    return Reaction(
-        name,
-        order,
-        rate_constant,
-        initial_concentration
-    )
+    reaction = Reaction(name, order, rate_constant, initial_concentration)
+
+    return reaction
 
 
-def create_simulator_from_user(reaction):
-    print("\nSimulation settings")
-    print("-------------------")
+def print_summary(reaction, simulator, times, concentrations, rates):
+    """
+    Prints a useful summary of the simulation.
+    """
 
-    total_time = get_positive_float_input(
-        "Enter total simulation time in seconds: "
-    )
+    summary = simulator.get_summary(times, concentrations, rates)
 
-    time_step = get_positive_float_input(
-        "Enter time step in seconds: "
-    )
-
-    return Simulator(reaction, total_time, time_step)
-
-
-def print_simulation_summary(reaction, summary):
-    print("\nSimulation summary")
-    print("------------------")
+    print("\nSimulation complete.")
     print(reaction.get_description())
 
-    print(f"\nFinal concentration: {summary['final_concentration']:.5f} mol dm^-3")
-    print(f"Final rate: {summary['final_rate']:.5f}")
-
-    if summary["simulated_half_life"] is None:
-        print("Simulated half-life: not reached")
+    if summary["simulated_half_life"] is not None:
+        print(f"Estimated half-life from simulation = {summary['simulated_half_life']} s")
     else:
-        print(f"Simulated half-life: {summary['simulated_half_life']:.2f} s")
+        print("Half-life was not reached during this simulation.")
 
-    print(f"Theoretical half-life: {summary['theoretical_half_life']:.2f} s")
-    print(f"Percentage reacted: {summary['percentage_reacted']:.2f}%")
-    print(f"Average rate: {summary['average_rate']:.5f}")
+    print(f"Theoretical half-life = {summary['theoretical_half_life']:.3f} s")
+    print(f"Final concentration = {summary['final_concentration']:.5f} mol dm^-3")
+    print(f"Final rate = {summary['final_rate']:.5f}")
+    print(f"Percentage reacted = {summary['percentage_reacted']:.2f}%")
+    print(f"Average rate = {summary['average_rate']:.5f}")
 
-    if summary["time_for_90_percent"] is None:
-        print("Time for 90% reacted: not reached")
+    if summary["time_for_90_percent"] is not None:
+        print(f"Time for 90% reacted = {summary['time_for_90_percent']} s")
     else:
-        print(f"Time for 90% reacted: {summary['time_for_90_percent']:.2f} s")
-
-    print(f"Maximum Euler percentage error: {summary['maximum_error']:.3f}%")
+        print("90% reacted was not reached during this simulation.")
 
 
-def run_single_reaction():
+def run_one_simulation():
+    """
+    Runs one reaction simulation and gives the user options to plot and save.
+    """
+
     try:
         reaction = create_reaction_from_user()
-        simulator = create_simulator_from_user(reaction)
 
-        (
-            times,
-            concentrations,
-            rates,
-            exact_concentrations,
-            percentage_errors
-        ) = simulator.run_simulation()
+        total_time = get_float_input("Enter total simulation time in seconds: ")
+        time_step = get_float_input("Enter time step in seconds: ")
 
-        summary = simulator.get_summary(
-            times,
-            concentrations,
-            rates,
-            percentage_errors
-        )
+        simulator = Simulator(reaction, total_time, time_step)
 
-        print_simulation_summary(reaction, summary)
+        times, concentrations, rates = simulator.run_simulation()
 
-        show_table = ask_yes_no("\nShow data table? (y/n): ")
+        print_summary(reaction, simulator, times, concentrations, rates)
 
-        if show_table:
-            simulator.print_table(
-                times,
-                concentrations,
-                rates,
-                exact_concentrations,
-                percentage_errors
-            )
+        print("\nFirst few results:")
+        simulator.print_table(times, concentrations, rates)
 
         plotter = Plotter()
 
-        if ask_yes_no("\nShow concentration-time graph? (y/n): "):
-            plotter.plot_concentration_time(
+        plot_choice = input("\nDo you want to show the concentration graph? (y/n): ")
+
+        if plot_choice.lower() == "y":
+            plotter.plot_single_reaction(
                 times,
                 concentrations,
-                reaction.name
+                reaction.reaction_name
             )
 
-        if ask_yes_no("Show rate-time graph? (y/n): "):
+        rate_choice = input("Do you want to show the rate graph? (y/n): ")
+
+        if rate_choice.lower() == "y":
             plotter.plot_rate_time(
                 times,
                 rates,
-                reaction.name
+                reaction.reaction_name
             )
 
-        if ask_yes_no("Show simulated vs exact graph? (y/n): "):
-            plotter.plot_simulated_vs_exact(
-                times,
-                concentrations,
-                exact_concentrations,
-                reaction.name
-            )
+        save_choice = input("\nDo you want to save the data as a CSV file? (y/n): ")
 
-        if ask_yes_no("Show Euler error graph? (y/n): "):
-            plotter.plot_error_time(
-                times,
-                percentage_errors,
-                reaction.name
-            )
-
-        if ask_yes_no("\nSave full simulation data to CSV? (y/n): "):
+        if save_choice.lower() == "y":
             filename = input("Enter filename: ")
-
-            export_simulation_to_csv(
-                filename,
-                times,
-                concentrations,
-                rates,
-                exact_concentrations,
-                percentage_errors
-            )
-
-        if ask_yes_no("Save summary to CSV? (y/n): "):
-            filename = input("Enter filename: ")
-
-            export_summary_to_csv(
-                filename,
-                reaction,
-                summary
-            )
+            export_to_csv(filename, times, concentrations)
 
     except ValueError as error:
         print(f"Error: {error}")
 
 
 def compare_two_reactions():
+    """
+    Allows the user to simulate and compare two reactions on one graph.
+    """
+
     results = []
 
     try:
         for number in range(1, 3):
-            print(f"\nReaction {number}")
-            print("----------")
+            print(f"\n--- Reaction {number} ---")
 
             reaction = create_reaction_from_user()
-            simulator = create_simulator_from_user(reaction)
 
-            (
-                times,
-                concentrations,
-                rates,
-                exact_concentrations,
-                percentage_errors
-            ) = simulator.run_simulation()
+            total_time = get_float_input("Enter total simulation time in seconds: ")
+            time_step = get_float_input("Enter time step in seconds: ")
 
-            summary = simulator.get_summary(
-                times,
-                concentrations,
-                rates,
-                percentage_errors
-            )
-
-            print_simulation_summary(reaction, summary)
+            simulator = Simulator(reaction, total_time, time_step)
+            times, concentrations, rates = simulator.run_simulation()
 
             results.append({
-                "name": reaction.name,
+                "name": reaction.reaction_name,
                 "times": times,
                 "concentrations": concentrations
             })
@@ -250,104 +209,105 @@ def compare_two_reactions():
         print(f"Error: {error}")
 
 
-def arrhenius_temperature_tool():
+def compare_reaction_orders():
+    """
+    Shows what the concentration-time graph would look like for
+    zero-order, first-order and second-order reactions.
+
+    The same numerical value of k is used so that the graph shapes can be
+    compared easily. In real chemistry, the units of k are different for
+    different reaction orders, but this comparison is still useful visually.
+    """
+
     try:
-        print("\nArrhenius temperature comparison")
-        print("--------------------------------")
+        print("\nReaction order graph comparison")
+        print("-------------------------------")
+        print("This compares 0th, 1st and 2nd order graphs using the same starting values.")
 
-        activation_energy = get_positive_float_input(
-            "Enter activation energy Ea in J mol^-1: "
+        rate_constant = get_float_input("Enter a numerical value for k: ")
+        initial_concentration = get_float_input(
+            "Enter initial concentration in mol dm^-3: "
         )
+        total_time = get_float_input("Enter total simulation time in seconds: ")
+        time_step = get_float_input("Enter time step in seconds: ")
 
-        pre_exponential_factor = get_positive_float_input(
-            "Enter pre-exponential factor A: "
-        )
+        results = []
 
-        number_of_temperatures = get_menu_choice(
-            "How many temperatures do you want to compare? Choose 2, 3, 4, or 5: ",
-            [2, 3, 4, 5]
-        )
+        for order in [0, 1, 2]:
+            reaction_name = f"Order {order}"
 
-        temperatures = []
-
-        for i in range(number_of_temperatures):
-            temperature = get_positive_float_input(
-                f"Enter temperature {i + 1} in K: "
+            reaction = Reaction(
+                reaction_name,
+                order,
+                rate_constant,
+                initial_concentration
             )
 
-            temperatures.append(temperature)
+            simulator = Simulator(reaction, total_time, time_step)
+            times, concentrations, rates = simulator.run_simulation()
 
-        results = compare_arrhenius_temperatures(
-            activation_energy,
-            pre_exponential_factor,
-            temperatures
-        )
-
-        print("\nTemperature / K    Rate constant k")
-        print("----------------------------------")
-
-        for result in results:
-            print(
-                f"{result['temperature']:12.2f}    "
-                f"{result['rate_constant']:.5g}"
-            )
+            results.append({
+                "name": reaction_name,
+                "times": times,
+                "concentrations": concentrations
+            })
 
         plotter = Plotter()
-
-        if ask_yes_no("\nShow temperature graph? (y/n): "):
-            plotter.plot_arrhenius_temperature_graph(results)
-
-        if ask_yes_no("Save Arrhenius data to CSV? (y/n): "):
-            filename = input("Enter filename: ")
-            export_arrhenius_to_csv(filename, results)
+        plotter.plot_order_comparison(results)
 
     except ValueError as error:
         print(f"Error: {error}")
 
 
-def about_project():
+def print_about_project():
+    """
+    Prints a short explanation of the chemistry behind the program.
+    """
+
     print("\nAbout this project")
     print("------------------")
     print("This program simulates simple chemical reaction kinetics.")
-    print("It supports first-order and second-order reactions.")
-    print("The program uses Euler's method to estimate concentration over time.")
-    print("The program also compares Euler results with exact integrated equations.")
-    print("It includes the Arrhenius equation to show temperature effects.")
-    print()
-    print("First-order explanation:")
-    print(explain_reaction_order(1))
-    print()
-    print("Second-order explanation:")
-    print(explain_reaction_order(2))
+    print("For a zero-order reaction, the rate is constant and does not depend on [A].")
+    print("For a first-order reaction, the rate depends on [A].")
+    print("For a second-order reaction, the rate depends on [A]^2.")
+    print("Euler's method is used to estimate how concentration changes over time.")
+    print("The Arrhenius equation can also be used to estimate k from temperature.")
 
 
 def main_menu():
+    """
+    Main menu loop.
+    """
+
     while True:
         print("\nReaction Kinetics Simulator")
         print("---------------------------")
         print("1 - Run one reaction simulation")
         print("2 - Compare two reactions")
-        print("3 - Arrhenius temperature comparison")
+        print("3 - Compare 0th, 1st and 2nd order graph shapes")
         print("4 - About this project")
         print("5 - Exit")
 
-        choice = get_menu_choice("Enter choice: ", [1, 2, 3, 4, 5])
+        choice = get_int_input("Enter choice: ")
 
         if choice == 1:
-            run_single_reaction()
+            run_one_simulation()
 
         elif choice == 2:
             compare_two_reactions()
 
         elif choice == 3:
-            arrhenius_temperature_tool()
+            compare_reaction_orders()
 
         elif choice == 4:
-            about_project()
+            print_about_project()
 
         elif choice == 5:
             print("Goodbye.")
             break
+
+        else:
+            print("Invalid choice. Please try again.")
 
 
 if __name__ == "__main__":

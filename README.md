@@ -9,7 +9,7 @@ You can run the code by calling
 ~~~~
 
 
-# Reaction Kinetics Simulator
+# 1) Reaction Kinetics Simulator
 
 ## Project summary
 

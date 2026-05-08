@@ -17,10 +17,10 @@ This program allows the user to simulate zero-order, first-order and
 second-order chemical reactions and plot concentration against time.
 """
 
-from reaction_caner import Reaction, calculate_arrhenius_rate_constant
-from simulator_caner import Simulator
-from plotter_joe import Plotter
-from data_export_joe import export_to_csv
+from Caner.Chemical_Reaction_Kinetics.reaction_caner import Reaction, calculate_arrhenius_rate_constant
+from Caner.Chemical_Reaction_Kinetics.simulator_caner import Simulator
+from Joe.Chemical_Reaction_Kinetics.plotter_joe import Plotter
+from Joe.Chemical_Reaction_Kinetics.data_export_joe import *
 
 
 def get_float_input(message):

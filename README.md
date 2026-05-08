@@ -68,7 +68,7 @@ Files:
 
 - `reaction_caner.py`
 - `simulator_caner.py`
-- some of `simulator_caner.py`
+- some of `main_joe.py`
 
 ### Joe
 

@@ -84,3 +84,9 @@ Files:
 - `plotter_joe.py`
 - `data_export_joe.py`
 - `main_joe.py`
+
+
+## How to Run
+
+Simply put into the terminal 
+- `python -m Joe.Chemical_Reaction_Kinetics.main_joe`

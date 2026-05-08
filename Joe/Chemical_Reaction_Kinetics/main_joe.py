@@ -20,7 +20,7 @@ second-order chemical reactions and plot concentration against time.
 from Caner.Chemical_Reaction_Kinetics.reaction_caner import Reaction, calculate_arrhenius_rate_constant
 from Caner.Chemical_Reaction_Kinetics.simulator_caner import Simulator
 from Joe.Chemical_Reaction_Kinetics.plotter_joe import Plotter
-from Joe.Chemical_Reaction_Kinetics.data_export_joe import *
+from Joe.Chemical_Reaction_Kinetics.data_export_joe import export_simulation_to_csv, export_summary_to_csv
 
 
 def get_float_input(message):
@@ -152,7 +152,7 @@ def run_one_simulation():
         plot_choice = input("\nDo you want to show the concentration graph? (y/n): ")
 
         if plot_choice.lower() == "y":
-            plotter.plot_single_reaction(
+            plotter.plot_concentration_time(
                 times,
                 concentrations,
                 reaction.reaction_name
@@ -167,11 +167,12 @@ def run_one_simulation():
                 reaction.reaction_name
             )
 
-        save_choice = input("\nDo you want to save the data as a CSV file? (y/n): ")
+        save_choice = input("\nDo you want to save the summary as a CSV file? (y/n): ")
 
         if save_choice.lower() == "y":
             filename = input("Enter filename: ")
-            export_to_csv(filename, times, concentrations)
+            summary = simulator.get_summary(times, concentrations, rates)
+            export_summary_to_csv(filename, reaction, summary)
 
     except ValueError as error:
         print(f"Error: {error}")
@@ -253,7 +254,7 @@ def compare_reaction_orders():
             })
 
         plotter = Plotter()
-        plotter.plot_order_comparison(results)
+        plotter.plot_comparison(results)
 
     except ValueError as error:
         print(f"Error: {error}")

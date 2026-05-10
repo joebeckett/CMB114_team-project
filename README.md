@@ -138,13 +138,13 @@ Matplotlib graphs embedded in Tkinter
 
 ## File structure
 
-main_caner.py - starts the Tkinter application and opens the main window
-validation_caner.py - validates user inputs from the GUI
-gui_caner.py - creates the Tkinter interface and connects buttons to calculations
-reaction_joe.py - chemistry helper functions and reaction information
-calculations_joe.py - pH calculations and titration curve generation
-plotting_joe.py - graph plotting, graph export, and CSV export
-requirements.txt - required Python libraries
+`main_caner.py` - starts the Tkinter application and opens the main window
+`validation_caner.py` - validates user inputs from the GUI
+`gui_caner.py` - creates the Tkinter interface and connects buttons to calculations
+`reaction_joe.py` - chemistry helper functions and reaction information
+`calculations_joe.py` - pH calculations and titration curve generation
+`plotting_joe.py` - graph plotting, graph export, and CSV export
+`requirements.txt` - required Python libraries
 
 ## Work split
 
@@ -164,9 +164,9 @@ Calling Joe’s calculation and plotting functions
 
 ### Files:
 
-main_caner.py
-validation_caner.py
-gui_caner.py
+- `main_caner.py`
+- `validation_caner.py`
+- `gui_caner.py`
 
 ### Joe
 
@@ -186,9 +186,9 @@ Graph export
 
 ### Files:
 
-reaction_joe.py
-calculations_joe.py
-plotting_joe.py
+- `reaction_joe.py`
+- `calculations_joe.py`
+- `plotting_joe.py`
 
 ## How to Run
 

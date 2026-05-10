@@ -108,33 +108,33 @@ The program supports strong acid vs strong base titrations and weak acid vs stro
 
 The project includes:
 
-Strong acid vs strong base titrations
-Weak acid vs strong base titrations
-pH calculations before equivalence
-pH calculations at equivalence
-pH calculations after equivalence
-Buffer region for weak acid titrations
-Half-equivalence point
-Equivalence point volume
-Initial pH calculation
-pH at a selected volume
-Simple ionic reaction equations
+- Strong acid vs strong base titrations
+- Weak acid vs strong base titrations
+- pH calculations before equivalence
+- pH calculations at equivalence
+- pH calculations after equivalence
+- Buffer region for weak acid titrations
+- Half-equivalence point
+- Equivalence point volume
+- Initial pH calculation
+- pH at a selected volume
+- Simple ionic reaction equations
 
 ## Programming features
 
 The project uses:
 
-Tkinter GUI
-Functions
-Classes
-Multiple Python files
-Import statements
-Error handling
-Input validation
-CSV export
-Graph export
-Graph plotting using matplotlib
-Matplotlib graphs embedded in Tkinter
+- Tkinter GUI
+- Functions
+- Classes
+- Multiple Python files
+- Import statements
+- Error handling
+- Input validation
+- CSV export
+- Graph export
+- Graph plotting using matplotlib
+- Matplotlib graphs embedded in Tkinter
 
 ## File structure
 
@@ -152,15 +152,15 @@ Matplotlib graphs embedded in Tkinter
 
 Caner worked mainly on:
 
-Main application start-up
-Tkinter GUI layout
-Input fields
-Buttons
-Displaying calculated values
-Input validation
-Error messages
-Loading example values
-Calling Joe’s calculation and plotting functions
+- Main application start-up
+- Tkinter GUI layout
+- Input fields
+- Buttons
+- Displaying calculated values
+- Input validation
+- Error messages
+- Loading example values
+- Calling Joe’s calculation and plotting functions
 
 ### Files:
 
@@ -172,17 +172,17 @@ Calling Joe’s calculation and plotting functions
 
 Joe worked mainly on:
 
-Chemistry helper functions
-Mole calculations
-Volume conversions
-Strong acid vs strong base pH calculations
-Weak acid vs strong base pH calculations
-Equivalence point calculations
-Half-equivalence point calculations
-Titration curve data generation
-Matplotlib plotting
-CSV export
-Graph export
+- Chemistry helper functions
+- Mole calculations
+- Volume conversions
+- Strong acid vs strong base pH calculations
+- Weak acid vs strong base pH calculations
+- Equivalence point calculations
+- Half-equivalence point calculations
+- Titration curve data generation
+- Matplotlib plotting
+- CSV export
+- Graph export
 
 ### Files:
 

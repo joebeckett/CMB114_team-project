@@ -2,10 +2,17 @@
 validation_caner.py
 Author: Caner
 
-This file checks user input before it is used in the calculation code.
-It helps stop errors such as negative volumes, missing pKa values, or invalid
-menu choices.
+This file checks the values entered into the Tkinter application before they
+are passed into Joe's calculation code.
+
+The previous terminal version used simple validation helper functions, so this
+version keeps that same style while changing the input names to match the GUI.
 """
+
+TITRATION_TYPES = [
+    "Strong acid vs strong base",
+    "Weak acid vs strong base"
+]
 
 MIN_CONCENTRATION = 0.000001
 MAX_CONCENTRATION = 10.0
@@ -20,13 +27,13 @@ MIN_PKA = -5.0
 MAX_PKA = 20.0
 
 
-def validate_menu_choice(choice):
+def validate_titration_type(titration_type):
     """
-    Checks whether the titration type choice is valid.
+    Checks that the selected titration type is valid.
     """
 
-    if choice not in [1, 2]:
-        raise ValueError("Titration type must be 1 or 2.")
+    if titration_type not in TITRATION_TYPES:
+        raise ValueError("Please choose a valid titration type.")
 
 
 def validate_positive_number(value, field_name):
@@ -40,7 +47,7 @@ def validate_positive_number(value, field_name):
 
 def validate_range(value, field_name, minimum, maximum):
     """
-    Checks that a value is inside a sensible range.
+    Checks that a number is within a sensible range.
     """
 
     if value < minimum or value > maximum:
@@ -49,12 +56,48 @@ def validate_range(value, field_name, minimum, maximum):
         )
 
 
+def convert_to_float(value, field_name):
+    """
+    Converts a text input into a float.
+    """
+
+    if value.strip() == "":
+        raise ValueError(f"{field_name} is missing.")
+
+    try:
+        return float(value)
+
+    except ValueError:
+        raise ValueError(f"{field_name} must be a number.")
+
+
+def convert_to_int(value, field_name):
+    """
+    Converts a text input into an integer.
+    """
+
+    if value.strip() == "":
+        raise ValueError(f"{field_name} is missing.")
+
+    try:
+        number = float(value)
+
+    except ValueError:
+        raise ValueError(f"{field_name} must be a whole number.")
+
+    if not number.is_integer():
+        raise ValueError(f"{field_name} must be a whole number.")
+
+    return int(number)
+
+
 def validate_concentration(value, field_name):
     """
-    Validates a concentration value.
+    Validates concentration values.
     """
 
     validate_positive_number(value, field_name)
+
     validate_range(
         value,
         field_name,
@@ -65,10 +108,11 @@ def validate_concentration(value, field_name):
 
 def validate_volume(value, field_name):
     """
-    Validates a volume value.
+    Validates volume values.
     """
 
     validate_positive_number(value, field_name)
+
     validate_range(
         value,
         field_name,
@@ -77,25 +121,22 @@ def validate_volume(value, field_name):
     )
 
 
-def validate_pka(value):
+def validate_selected_volume(value, max_volume):
     """
-    Validates pKa for weak acid titrations.
+    Checks the selected base volume used for the single pH calculation.
     """
-
-    if value is None:
-        raise ValueError("pKa is required for a weak acid titration.")
 
     validate_range(
         value,
-        "pKa",
-        MIN_PKA,
-        MAX_PKA
+        "Selected volume",
+        MIN_VOLUME,
+        max_volume
     )
 
 
 def validate_graph_points(value):
     """
-    Validates the number of points used to draw the graph.
+    Checks the number of graph points.
     """
 
     if value < MIN_GRAPH_POINTS or value > MAX_GRAPH_POINTS:
@@ -104,79 +145,90 @@ def validate_graph_points(value):
         )
 
 
-def split_selected_volumes(text):
+def validate_pka(value, required):
     """
-    Splits comma-separated selected volumes into a list of strings.
-    """
+    Checks pKa for weak acid titrations.
 
-    if text.strip() == "":
-        return []
-
-    parts = text.split(",")
-    cleaned_parts = []
-
-    for part in parts:
-        cleaned = part.strip()
-
-        if cleaned != "":
-            cleaned_parts.append(cleaned)
-
-    return cleaned_parts
-
-
-def parse_selected_volumes(text, max_volume):
-    """
-    Converts selected volume text into a list of floats.
+    Strong acid titrations do not need pKa, so blank input is allowed.
     """
 
-    selected_volumes = []
-    parts = split_selected_volumes(text)
+    if value.strip() == "":
+        if required:
+            raise ValueError("pKa is required for a weak acid titration.")
+        return None
 
-    for part in parts:
-        try:
-            volume = float(part)
-        except ValueError:
-            raise ValueError("Selected volumes must be numbers separated by commas.")
+    pka = convert_to_float(value, "pKa")
 
-        if volume < MIN_VOLUME:
-            raise ValueError("Selected volumes cannot be negative.")
+    validate_range(
+        pka,
+        "pKa",
+        MIN_PKA,
+        MAX_PKA
+    )
 
-        if volume > max_volume:
-            raise ValueError(
-                "Selected volumes cannot be greater than the maximum base volume."
-            )
-
-        selected_volumes.append(volume)
-
-    return selected_volumes
+    return pka
 
 
-def choice_to_titration_type(choice):
+def validate_filename(filename, extension):
     """
-    Converts a menu choice into a titration type name.
+    Validates export filenames.
     """
 
-    if choice == 1:
-        return "Strong acid vs strong base"
+    if filename.strip() == "":
+        raise ValueError("Filename cannot be blank.")
 
-    return "Weak acid vs strong base"
+    invalid_characters = ["<", ">", ":", '"', "|", "?", "*"]
+
+    for character in invalid_characters:
+        if character in filename:
+            raise ValueError(f"Filename cannot contain {character}.")
+
+    if not filename.endswith(extension):
+        filename = filename + extension
+
+    return filename
 
 
-def validate_titration_inputs(raw_data):
+def validate_inputs(raw_inputs):
     """
-    Validates all titration inputs and returns a clean dictionary.
+    Main validation function used by gui_caner.py.
+
+    It takes raw text from the GUI and returns a clean dictionary containing
+    float and integer values.
     """
 
-    choice = raw_data["choice"]
+    titration_type = raw_inputs["titration_type"]
+    validate_titration_type(titration_type)
 
-    validate_menu_choice(choice)
+    acid_concentration = convert_to_float(
+        raw_inputs["acid_concentration"],
+        "Acid concentration"
+    )
 
-    acid_concentration = raw_data["acid_concentration"]
-    acid_volume = raw_data["acid_volume"]
-    base_concentration = raw_data["base_concentration"]
-    max_base_volume = raw_data["max_base_volume"]
-    graph_points = raw_data["graph_points"]
-    pka = raw_data["pka"]
+    acid_volume = convert_to_float(
+        raw_inputs["acid_volume"],
+        "Acid volume"
+    )
+
+    base_concentration = convert_to_float(
+        raw_inputs["base_concentration"],
+        "Base concentration"
+    )
+
+    max_base_volume = convert_to_float(
+        raw_inputs["max_base_volume"],
+        "Maximum base volume"
+    )
+
+    selected_volume = convert_to_float(
+        raw_inputs["selected_volume"],
+        "Selected volume"
+    )
+
+    graph_points = convert_to_int(
+        raw_inputs["graph_points"],
+        "Graph points"
+    )
 
     validate_concentration(
         acid_concentration,
@@ -198,18 +250,21 @@ def validate_titration_inputs(raw_data):
         "Maximum base volume"
     )
 
-    validate_graph_points(graph_points)
-
-    selected_volumes = parse_selected_volumes(
-        raw_data["selected_volumes"],
+    validate_selected_volume(
+        selected_volume,
         max_base_volume
     )
 
-    titration_type = choice_to_titration_type(choice)
+    validate_graph_points(graph_points)
 
-    if titration_type == "Weak acid vs strong base":
-        validate_pka(pka)
-    else:
+    is_weak_acid = titration_type == "Weak acid vs strong base"
+
+    pka = validate_pka(
+        raw_inputs["pka"],
+        required=is_weak_acid
+    )
+
+    if not is_weak_acid:
         pka = None
 
     clean_data = {
@@ -218,7 +273,7 @@ def validate_titration_inputs(raw_data):
         "acid_volume": acid_volume,
         "base_concentration": base_concentration,
         "max_base_volume": max_base_volume,
-        "selected_volumes": selected_volumes,
+        "selected_volume": selected_volume,
         "graph_points": graph_points,
         "pka": pka
     }
@@ -226,55 +281,52 @@ def validate_titration_inputs(raw_data):
     return clean_data
 
 
-def validate_filename(filename, extension):
-    """
-    Validates and fixes export filenames.
-    """
-
-    if filename.strip() == "":
-        raise ValueError("Filename cannot be blank.")
-
-    invalid_characters = ["<", ">", ":", '"', "|", "?", "*"]
-
-    for character in invalid_characters:
-        if character in filename:
-            raise ValueError(f"Filename cannot contain {character}.")
-
-    if not filename.endswith(extension):
-        filename = filename + extension
-
-    return filename
-
-
 def get_strong_acid_example():
     """
-    Returns example data for a strong acid vs strong base titration.
+    Returns example values for a strong acid titration.
     """
 
     return {
         "titration_type": "Strong acid vs strong base",
-        "acid_concentration": 0.1,
-        "acid_volume": 25.0,
-        "base_concentration": 0.1,
-        "max_base_volume": 50.0,
-        "selected_volumes": [0.0, 10.0, 25.0, 30.0],
-        "graph_points": 200,
-        "pka": None
+        "acid_concentration": "0.1",
+        "acid_volume": "25",
+        "base_concentration": "0.1",
+        "max_base_volume": "50",
+        "selected_volume": "25",
+        "graph_points": "200",
+        "pka": ""
     }
 
 
 def get_weak_acid_example():
     """
-    Returns example data for a weak acid vs strong base titration.
+    Returns example values for a weak acid titration.
     """
 
     return {
         "titration_type": "Weak acid vs strong base",
-        "acid_concentration": 0.1,
-        "acid_volume": 25.0,
-        "base_concentration": 0.1,
-        "max_base_volume": 50.0,
-        "selected_volumes": [0.0, 12.5, 25.0, 30.0],
-        "graph_points": 200,
-        "pka": 4.76
+        "acid_concentration": "0.1",
+        "acid_volume": "25",
+        "base_concentration": "0.1",
+        "max_base_volume": "50",
+        "selected_volume": "12.5",
+        "graph_points": "200",
+        "pka": "4.76"
+    }
+
+
+def get_blank_inputs():
+    """
+    Returns blank values for clearing the GUI form.
+    """
+
+    return {
+        "titration_type": "Strong acid vs strong base",
+        "acid_concentration": "",
+        "acid_volume": "",
+        "base_concentration": "",
+        "max_base_volume": "",
+        "selected_volume": "",
+        "graph_points": "",
+        "pka": ""
     }

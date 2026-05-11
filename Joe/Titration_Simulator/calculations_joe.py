@@ -7,7 +7,7 @@ This file contains the calculation engine for the titration simulator
 
 import math
 
-from reaction_joe import (
+from Joe.Titration_Simulator.reaction_joe import (
     calculate_moles,
     calculate_total_volume,
     calculate_equivalence_volume,

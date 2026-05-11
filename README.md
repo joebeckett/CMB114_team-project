@@ -91,6 +91,16 @@ Files:
 Type into the terminal: 
 - `python -m Joe.Chemical_Reaction_Kinetics.main_joe`
 
+## Example
+- Run code through terminal, and you will be given a set of options
+- click '1 - Run one Reaction simulation'
+- Enter a Name for the Reaction: Reaction 1
+- Choose reaction order: '1 - First Order Reaction'
+- Choose: '1 - Enter k directly'
+- Enter rate constant: 0.04
+- Enter Initiral Concentration: 0.5
+- Enter total simulation time: 100
+- Enter time steps: 1
 
 # 2. Acid-Base Titration Simulator
 

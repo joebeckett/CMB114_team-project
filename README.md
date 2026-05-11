@@ -93,7 +93,7 @@ Type into the terminal:
 
 ## Example
 - Run code through terminal, and you will be given a set of options
-- click '1 - Run one Reaction simulation'
+- Choose '1 - Run one Reaction simulation'
 - Enter a Name for the Reaction: Reaction 1
 - Choose reaction order: '1 - First Order Reaction'
 - Choose: '1 - Enter k directly'

@@ -1,5 +1,4 @@
 # CMB114 Team Project
-Template for a simple team project
 
 The code is divided between folders `Caner` and `Joe`.
 
@@ -33,7 +32,6 @@ The project includes:
 ## Programming features
 
 The project uses:
-
 - Classes
 - Functions
 - Multiple Python files
@@ -44,7 +42,7 @@ The project uses:
 
 ## File structure
 
-- `main.py` - main menu and overall program control
+- `main_joe.py` - main menu and overall program control
 - `reaction_caner.py` - Reaction class and Arrhenius calculations
 - `simulator_caner.py` - simulation logic using Euler's method
 - `input_helpers_joe.py` - user input functions
@@ -90,7 +88,7 @@ Files:
 
 ## How to Run
 
-Simply put into the terminal 
+Type into the terminal: 
 - `python -m Joe.Chemical_Reaction_Kinetics.main_joe`
 
 
@@ -192,5 +190,5 @@ Joe worked mainly on:
 
 ## How to Run
 
-Simply put into the terminal 
+Type into the terminal 
 - `python -m Caner.Titration_Simulator.main_caner`

@@ -19,6 +19,7 @@ WEAK_ACID_NOTE = (
 
 
 def cm3_to_dm3(volume_cm3):
+    
     """
     Converts cm3 to dm3.
     """
@@ -27,6 +28,7 @@ def cm3_to_dm3(volume_cm3):
 
 
 def dm3_to_cm3(volume_dm3):
+    
     """
     Converts dm3 to cm3.
     """
@@ -35,6 +37,7 @@ def dm3_to_cm3(volume_dm3):
 
 
 def calculate_moles(concentration, volume_cm3):
+    
     """
     Calculates moles using concentration and volume.
     """
@@ -44,6 +47,7 @@ def calculate_moles(concentration, volume_cm3):
 
 
 def calculate_total_volume(acid_volume_cm3, base_volume_cm3):
+    
     """
     Calculates total solution volume in dm3.
     """
@@ -53,6 +57,7 @@ def calculate_total_volume(acid_volume_cm3, base_volume_cm3):
 
 
 def calculate_equivalence_volume(acid_concentration, acid_volume_cm3, base_concentration):
+    
     """
     Calculates the base volume needed for equivalence.
     Assumes a 1:1 acid-base reaction.
@@ -69,6 +74,7 @@ def calculate_equivalence_volume(acid_concentration, acid_volume_cm3, base_conce
 
 
 def calculate_half_equivalence_volume(equivalence_volume):
+    
     """
     Calculates the half-equivalence volume.
     """
@@ -77,6 +83,7 @@ def calculate_half_equivalence_volume(equivalence_volume):
 
 
 def get_reaction_note(titration_type):
+    
     """
     Returns a short explanation of the titration type.
     """
@@ -88,6 +95,7 @@ def get_reaction_note(titration_type):
 
 
 def get_simple_ionic_equation(titration_type):
+    
     """
     Returns a simple ionic equation for display.
     """
@@ -99,6 +107,7 @@ def get_simple_ionic_equation(titration_type):
 
 
 def describe_region(region):
+    
     """
     Explains the region of the titration curve.
     """

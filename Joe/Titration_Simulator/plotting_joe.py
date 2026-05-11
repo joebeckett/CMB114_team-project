@@ -10,13 +10,15 @@ import matplotlib.pyplot as plt
 
 
 class Plotter:
+    
     """
-    Plotter class for titration curves.
+    Plotter class for titration curves
     """
 
     def setup_graph(self, title):
+        
         """
-        Adds labels, title, grid and pH limits.
+        Adds labels, title, grid and pH limits
         """
 
         plt.title(title)
@@ -26,8 +28,9 @@ class Plotter:
         plt.grid(True)
 
     def add_key_markers(self, key_points):
+        
         """
-        Adds equivalence and half-equivalence markers.
+        Adds equivalence and half-equivalence markers
         """
 
         plt.axvline(
@@ -54,8 +57,9 @@ class Plotter:
             )
 
     def plot_single_curve(self, curve_data, key_points, data):
+        
         """
-        Plots one titration curve.
+        Plots one titration curve
         """
 
         volumes = curve_data["volumes"]
@@ -75,8 +79,9 @@ class Plotter:
         plt.show()
 
     def plot_comparison(self, comparison):
+        
         """
-        Plots two titration curves on the same axes.
+        Plots two titration curves on the same axes
         """
 
         first = comparison["first"]
@@ -114,8 +119,9 @@ class Plotter:
         plt.show()
 
     def save_single_graph(self, filename, curve_data, key_points, data):
+        
         """
-        Saves one titration graph as an image.
+        Saves one titration graph as an image
         """
 
         volumes = curve_data["volumes"]
@@ -136,8 +142,9 @@ class Plotter:
         plt.close()
 
     def export_curve_data(self, filename, curve_data):
+        
         """
-        Exports curve data to CSV.
+        Exports curve data to CSV
         """
 
         volumes = curve_data["volumes"]

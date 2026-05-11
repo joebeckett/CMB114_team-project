@@ -2,149 +2,183 @@
 plotting_joe.py
 Author: Joe
 
-This file handles matplotlib graphs and CSV export.
+This file handles matplotlib plotting and export.
+
+This file creates the titration curve, marks the equivalence point, the
+half-equivalence point for weak acids, the selected volume and exports
+curve data as CSV.
 """
 
 import csv
-import matplotlib.pyplot as plt
+
+from matplotlib.figure import Figure
 
 
 class Plotter:
     
     """
-    Plotter class for titration curves
+    Plotter class for titration graphs and exports
     """
 
-    def setup_graph(self, title):
+    def create_base_figure(self):
         
         """
-        Adds labels, title, grid and pH limits
+        Creates the base matplotlib figure and axis
         """
 
-        plt.title(title)
-        plt.xlabel("Volume of base added / cm3")
-        plt.ylabel("pH")
-        plt.ylim(0, 14)
-        plt.grid(True)
+        figure = Figure(
+            figsize=(7, 5),
+            dpi=100
+        )
 
-    def add_key_markers(self, key_points):
+        axis = figure.add_subplot(111)
+
+        return figure, axis
+
+    def setup_axis(self, axis, title):
         
         """
-        Adds equivalence and half-equivalence markers
+        Adds the graph title, axis labels, grid and pH limits
         """
 
-        plt.axvline(
-            key_points["equivalence_volume"],
+        axis.set_title(title)
+        axis.set_xlabel("Volume of base added / cm³")
+        axis.set_ylabel("pH")
+        axis.set_ylim(0, 14)
+        axis.grid(True)
+
+    def add_equivalence_marker(self, axis, key_points):
+        
+        """
+        Adds the equivalence point marker to the graph
+        """
+
+        equivalence_volume = key_points["equivalence_volume"]
+        equivalence_ph = key_points["equivalence_ph"]
+
+        axis.axvline(
+            equivalence_volume,
             linestyle="--",
             label="Equivalence point"
         )
 
-        plt.scatter(
-            key_points["equivalence_volume"],
-            key_points["equivalence_ph"]
+        axis.scatter(
+            equivalence_volume,
+            equivalence_ph
         )
 
-        if key_points["half_equivalence_ph"] is not None:
-            plt.axvline(
-                key_points["half_equivalence_volume"],
-                linestyle=":",
-                label="Half-equivalence point"
-            )
+        axis.annotate(
+            f"Equivalence\n{equivalence_volume:.2f} cm³",
+            xy=(equivalence_volume, equivalence_ph),
+            xytext=(equivalence_volume, equivalence_ph + 1),
+            arrowprops={"arrowstyle": "->"},
+            fontsize=8
+        )
 
-            plt.scatter(
-                key_points["half_equivalence_volume"],
-                key_points["half_equivalence_ph"]
-            )
-
-    def plot_single_curve(self, curve_data, key_points, data):
+    def add_half_equivalence_marker(self, axis, key_points):
         
         """
-        Plots one titration curve
+        Adds the half-equivalence point marker for weak acid titrations
         """
 
-        volumes = curve_data["volumes"]
-        ph_values = curve_data["ph_values"]
+        if key_points["half_equivalence_ph"] is None:
+            return
 
-        plt.figure(figsize=(8, 5))
-        plt.plot(
-            volumes,
-            ph_values,
-            label="Titration curve"
-        )
+        half_volume = key_points["half_equivalence_volume"]
+        half_ph = key_points["half_equivalence_ph"]
 
-        self.add_key_markers(key_points)
-        self.setup_graph(data["titration_type"])
-
-        plt.legend()
-        plt.show()
-
-    def plot_comparison(self, comparison):
-        
-        """
-        Plots two titration curves on the same axes
-        """
-
-        first = comparison["first"]
-        second = comparison["second"]
-
-        plt.figure(figsize=(8, 5))
-
-        plt.plot(
-            first["curve_data"]["volumes"],
-            first["curve_data"]["ph_values"],
-            label="First titration"
-        )
-
-        plt.plot(
-            second["curve_data"]["volumes"],
-            second["curve_data"]["ph_values"],
-            label="Second titration"
-        )
-
-        plt.axvline(
-            first["key_points"]["equivalence_volume"],
-            linestyle="--",
-            label="First equivalence"
-        )
-
-        plt.axvline(
-            second["key_points"]["equivalence_volume"],
+        axis.axvline(
+            half_volume,
             linestyle=":",
-            label="Second equivalence"
+            label="Half-equivalence point"
         )
 
-        self.setup_graph("Comparison of titration curves")
+        axis.scatter(
+            half_volume,
+            half_ph
+        )
 
-        plt.legend()
-        plt.show()
+        axis.annotate(
+            f"Half-equivalence\n{half_volume:.2f} cm³",
+            xy=(half_volume, half_ph),
+            xytext=(half_volume, half_ph - 1),
+            arrowprops={"arrowstyle": "->"},
+            fontsize=8
+        )
 
-    def save_single_graph(self, filename, curve_data, key_points, data):
+    def add_selected_point_marker(self, axis, selected_point):
         
         """
-        Saves one titration graph as an image
+        Adds the user's selected volume marker to the graph
         """
 
-        volumes = curve_data["volumes"]
-        ph_values = curve_data["ph_values"]
+        selected_volume = selected_point["volume"]
+        selected_ph = selected_point["ph"]
 
-        plt.figure(figsize=(8, 5))
-        plt.plot(
-            volumes,
-            ph_values,
+        axis.scatter(
+            selected_volume,
+            selected_ph,
+            marker="x",
+            s=70,
+            label="Selected volume"
+        )
+
+        axis.annotate(
+            f"Selected\npH {selected_ph:.2f}",
+            xy=(selected_volume, selected_ph),
+            xytext=(selected_volume, selected_ph + 0.8),
+            arrowprops={"arrowstyle": "->"},
+            fontsize=8
+        )
+
+    def create_single_curve_figure(self, curve_data, key_points, selected_point, data):
+        
+        """
+        Creates one titration curve figure for the GUI
+        """
+
+        figure, axis = self.create_base_figure()
+
+        axis.plot(
+            curve_data["volumes"],
+            curve_data["ph_values"],
             label="Titration curve"
         )
 
-        self.add_key_markers(key_points)
-        self.setup_graph(data["titration_type"])
+        self.add_equivalence_marker(axis, key_points)
+        self.add_half_equivalence_marker(axis, key_points)
+        self.add_selected_point_marker(axis, selected_point)
 
-        plt.legend()
-        plt.savefig(filename, dpi=200)
-        plt.close()
+        self.setup_axis(
+            axis,
+            data["titration_type"]
+        )
+
+        axis.legend(
+            loc="best",
+            fontsize=8
+        )
+
+        figure.tight_layout()
+
+        return figure
+
+    def save_figure(self, figure, filename):
+        
+        """
+        Saves the titration graph as an image file
+        """
+
+        figure.savefig(
+            filename,
+            dpi=200,
+            bbox_inches="tight"
+        )
 
     def export_curve_data(self, filename, curve_data):
         
         """
-        Exports curve data to CSV
+        Exports the calculated curve data to a CSV file
         """
 
         volumes = curve_data["volumes"]

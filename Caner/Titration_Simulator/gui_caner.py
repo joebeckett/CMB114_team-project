@@ -13,7 +13,7 @@ from tkinter import ttk, messagebox, filedialog
 
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
-from validation_caner import (
+from .validation_caner import (
     TITRATION_TYPES,
     validate_inputs,
     validate_filename,

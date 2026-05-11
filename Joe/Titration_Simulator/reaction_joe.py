@@ -4,17 +4,17 @@ Author: Joe
 
 This file contains chemistry helper functions for the titration simulator.
 Volumes are entered in cm3, but calculations use dm3 because concentration is
-in mol dm^-3.
+measured in mol dm^-3.
 """
 
 STRONG_ACID_NOTE = (
-    "Strong acid and strong base titrations usually have an equivalence "
-    "point close to pH 7."
+    "Strong acid and strong base titrations have a sharp pH change near "
+    "the equivalence point. The equivalence point is close to pH 7."
 )
 
 WEAK_ACID_NOTE = (
-    "Weak acid and strong base titrations have a buffer region before "
-    "equivalence. At half-equivalence, pH is approximately equal to pKa."
+    "Weak acid and strong base titrations form a buffer region before "
+    "the equivalence point. At half-equivalence, pH is approximately pKa."
 )
 
 
@@ -39,7 +39,7 @@ def dm3_to_cm3(volume_dm3):
 def calculate_moles(concentration, volume_cm3):
     
     """
-    Calculates moles using concentration and volume.
+    Calculates moles from concentration and volume.
     """
 
     volume_dm3 = cm3_to_dm3(volume_cm3)
@@ -49,7 +49,7 @@ def calculate_moles(concentration, volume_cm3):
 def calculate_total_volume(acid_volume_cm3, base_volume_cm3):
     
     """
-    Calculates total solution volume in dm3.
+    Calculates the total solution volume in dm3.
     """
 
     total_volume_cm3 = acid_volume_cm3 + base_volume_cm3
@@ -59,8 +59,7 @@ def calculate_total_volume(acid_volume_cm3, base_volume_cm3):
 def calculate_equivalence_volume(acid_concentration, acid_volume_cm3, base_concentration):
     
     """
-    Calculates the base volume needed for equivalence.
-    Assumes a 1:1 acid-base reaction.
+    Calculates the base volume needed to reach equivalence.
     """
 
     acid_moles = calculate_moles(
@@ -69,7 +68,6 @@ def calculate_equivalence_volume(acid_concentration, acid_volume_cm3, base_conce
     )
 
     base_volume_dm3 = acid_moles / base_concentration
-
     return dm3_to_cm3(base_volume_dm3)
 
 
@@ -85,7 +83,7 @@ def calculate_half_equivalence_volume(equivalence_volume):
 def get_reaction_note(titration_type):
     
     """
-    Returns a short explanation of the titration type.
+    Returns a short note for the selected titration type.
     """
 
     if titration_type == "Strong acid vs strong base":
@@ -94,10 +92,10 @@ def get_reaction_note(titration_type):
     return WEAK_ACID_NOTE
 
 
-def get_simple_ionic_equation(titration_type):
+def get_ionic_equation(titration_type):
     
     """
-    Returns a simple ionic equation for display.
+    Returns the ionic equation for the selected titration type.
     """
 
     if titration_type == "Strong acid vs strong base":
@@ -109,16 +107,29 @@ def get_simple_ionic_equation(titration_type):
 def describe_region(region):
     
     """
-    Explains the region of the titration curve.
+    Returns a description of the titration curve region.
     """
 
     descriptions = {
         "initial": "Only acid is present.",
         "before equivalence": "Acid is still in excess.",
         "buffer region": "Weak acid and conjugate base are both present.",
-        "half-equivalence": "pH is approximately equal to pKa.",
+        "half-equivalence": "At half-equivalence, pH is approximately pKa.",
         "equivalence": "Acid and base have reacted in equal mole amounts.",
         "after equivalence": "Base is in excess."
     }
 
     return descriptions.get(region, "Point on the titration curve.")
+
+
+def build_reaction_information(titration_type):
+    
+    """
+    Builds reaction information for the selected titration type.
+    """
+
+    return {
+        "titration_type": titration_type,
+        "ionic_equation": get_ionic_equation(titration_type),
+        "note": get_reaction_note(titration_type)
+    }

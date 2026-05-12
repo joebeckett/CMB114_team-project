@@ -183,12 +183,38 @@ def run_one_simulation():
                 reaction.reaction_name
             )
 
-        save_choice = input("\nDo you want to save the summary as a CSV file? (y/n): ")
+        save_choice = input("\nDo you want to save results to a CSV file? (y/n): ")
 
         if save_choice.lower() == "y":
+            print("1 - Save summary only")
+            print("2 - Save full simulation data with exact values")
+            save_mode = get_int_input("Enter choice: ")
             filename = input("Enter filename: ")
-            summary = simulator.get_summary(times, concentrations, rates)
-            export_summary_to_csv(filename, reaction, summary)
+
+            if save_mode == 2:
+                exact_concentrations = [
+                    reaction.get_exact_concentration(t) for t in times
+                ]
+                percentage_errors = []
+
+                for simulated, exact in zip(concentrations, exact_concentrations):
+                    if exact == 0:
+                        error = 0.0 if simulated == 0 else 100.0
+                    else:
+                        error = abs(simulated - exact) / exact * 100
+                    percentage_errors.append(error)
+
+                export_simulation_to_csv(
+                    filename,
+                    times,
+                    concentrations,
+                    rates,
+                    exact_concentrations,
+                    percentage_errors
+                )
+            else:
+                summary = simulator.get_summary(times, concentrations, rates)
+                export_summary_to_csv(filename, reaction, summary)
 
     except ValueError as error:
         print(f"Error: {error}")

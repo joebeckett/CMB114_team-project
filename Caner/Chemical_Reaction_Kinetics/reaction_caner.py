@@ -82,6 +82,29 @@ class Reaction:
         else:
             return "rate = k[A]^2"
 
+    def get_exact_concentration(self, time):
+        """
+        Returns the exact concentration at a given time based on reaction order.
+
+        This is used for comparison with the Euler simulation output.
+        """
+
+        if time < 0:
+            raise ValueError("Time cannot be negative.")
+
+        if self.order == 0:
+            exact = self.initial_concentration - self.rate_constant * time
+            return max(exact, 0)
+
+        elif self.order == 1:
+            return self.initial_concentration * math.exp(-self.rate_constant * time)
+
+        else:
+            denominator = 1 + self.rate_constant * self.initial_concentration * time
+            if denominator == 0:
+                return 0
+            return self.initial_concentration / denominator
+
     def get_units_for_k(self):
         """
         Returns suitable units for the rate constant.

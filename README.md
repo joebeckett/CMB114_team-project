@@ -4,8 +4,8 @@ The code is divided between folders `Caner` and `Joe`.
 
 You can run the code by calling
 ~~~~
-- `python -m Joe.Chemical_Reaction_Kinetics.main_joe`
-- `python -m Caner.Titration_Simulator.main_caner`
+- `python ./kinetics.py`
+- `python ./titration.py`
 ~~~~
 
 
@@ -89,7 +89,7 @@ Files:
 ## How to Run
 
 Type into the terminal: 
-- `python -m Joe.Chemical_Reaction_Kinetics.main_joe`
+- `python ./kinetics.py`
 
 ## Example
 - Run code through terminal, and you will be given a set of options

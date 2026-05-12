@@ -51,6 +51,17 @@ def get_int_input(message):
             print("Please enter a whole number.")
 
 
+def get_k_units(order):
+    """Return the correct units string for the rate constant k."""
+
+    if order == 0:
+        return "mol dm^-3 s^-1"
+    elif order == 1:
+        return "s^-1"
+    else:
+        return "dm^3 mol^-1 s^-1"
+
+
 def create_reaction_from_user():
     """
     Asks the user for information and creates a Reaction object.
@@ -64,6 +75,7 @@ def create_reaction_from_user():
     print("2 - Second order")
 
     order = get_int_input("Enter reaction order: ")
+    k_units = get_k_units(order)
 
     print("\nHow do you want to enter the rate constant?")
     print("1 - Enter k directly")
@@ -72,7 +84,9 @@ def create_reaction_from_user():
     k_choice = get_int_input("Enter choice: ")
 
     if k_choice == 1:
-        rate_constant = get_float_input("Enter rate constant k: ")
+        rate_constant = get_float_input(
+            f"Enter rate constant k ({k_units}): "
+        )
 
     elif k_choice == 2:
         activation_energy = get_float_input("Enter activation energy Ea in J mol^-1: ")
@@ -89,7 +103,9 @@ def create_reaction_from_user():
 
     else:
         print("Invalid choice, using direct input for k.")
-        rate_constant = get_float_input("Enter rate constant k: ")
+        rate_constant = get_float_input(
+            f"Enter rate constant k ({k_units}): "
+        )
 
     initial_concentration = get_float_input(
         "Enter initial concentration in mol dm^-3: "
